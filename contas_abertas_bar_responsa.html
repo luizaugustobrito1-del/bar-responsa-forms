@@ -11,6 +11,11 @@
   .header{background:#D85A30;padding:1rem 1.25rem;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
   .header h1{color:#fff;font-size:17px;font-weight:600}
   .header p{color:rgba(255,255,255,.75);font-size:12px;margin-top:1px}
+  .config-panel{background:#1a1a1a;padding:1rem 1.25rem;border-bottom:2px solid #D85A30;display:none}
+  .config-panel label{color:#aaa;font-size:13px;display:block;margin-bottom:6px}
+  .config-panel input{width:100%;padding:8px 12px;border-radius:8px;border:1px solid #444;background:#2a2a2a;color:#fff;font-size:14px;font-family:inherit;margin-bottom:8px}
+  .config-panel button{width:100%;padding:10px;background:#D85A30;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit}
+  .config-status{font-size:13px;margin-top:6px;text-align:center;min-height:18px}
 
   .content{padding:1rem;max-width:520px;margin:0 auto}
   .card{background:#fff;border-radius:12px;border:1px solid #e5e5e0;padding:1rem 1.25rem;margin-bottom:1rem}
@@ -255,8 +260,30 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 var tipoAtual=null,funcAtual=null,destinoAtual=null;
+var senhaConfig='responsa!@#';
+var teclasBuf='';
+document.addEventListener('keypress',function(e){
+  teclasBuf+=e.key;
+  if(teclasBuf.includes(senhaConfig)){
+    var panel=document.getElementById('config-panel');
+    panel.style.display=panel.style.display==='block'?'none':'block';
+    teclasBuf='';
+    var url=localStorage.getItem('br_sheets_url')||'';
+    if(url)document.getElementById('sheets-url-input').value=url;
+  }
+  if(teclasBuf.length>20)teclasBuf=teclasBuf.slice(-20);
+});
+
+function salvarURLConfig(){
+  var url=document.getElementById('sheets-url-input').value.trim();
+  if(!url){alert('Cole a URL do Apps Script.');return;}
+  sheetsURL=url;
+  localStorage.setItem('br_sheets_url',url);
+  document.getElementById('config-status').innerHTML='<span style="color:#1D9E75">URL salva!</span>';
+  setTimeout(function(){document.getElementById('config-panel').style.display='none';},1500);
+}
 var fotosContaB64=[],fotosEvB64=[],ultimoProto='';
-var sheetsURL='https://script.google.com/macros/s/AKfycbwSmuIEvZ5tRgDbfMLquFrSj6d8VrkWYP6VttnwM60lQSYcaNo9DB0SVWr-3Tu4IpHJ/exec';
+var sheetsURL=localStorage.getItem('br_sheets_url')||'https://script.google.com/macros/s/AKfycbwSmuIEvZ5tRgDbfMLquFrSj6d8VrkWYP6VttnwM60lQSYcaNo9DB0SVWr-3Tu4IpHJ/exec';
 
 document.getElementById('data').value=new Date().toISOString().split('T')[0];
 
