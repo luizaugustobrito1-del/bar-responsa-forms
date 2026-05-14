@@ -79,14 +79,19 @@
 <body>
 
 <div class="header">
-  <div class="logo-circle"><i class="ti ti-file-invoice" style="color:#fff;font-size:20px"></i></div>
+  <div class="logo-circle" onclick="logoTap()" style="cursor:pointer"><i class="ti ti-file-invoice" style="color:#fff;font-size:20px"></i></div>
   <div>
     <h1>Bar Responsa</h1>
     <p>Registro de conta em aberto</p>
   </div>
 </div>
 
-
+<div id="config-panel" style="display:none;background:#1a1a1a;padding:1rem 1.25rem;border-bottom:2px solid #D85A30">
+  <label style="color:#aaa;font-size:13px;display:block;margin-bottom:6px">URL do Apps Script</label>
+  <input type="url" id="sheets-url-input" placeholder="https://script.google.com/macros/s/..." style="width:100%;padding:8px 12px;border-radius:8px;border:1px solid #444;background:#2a2a2a;color:#fff;font-size:14px;font-family:inherit;margin-bottom:8px" />
+  <button onclick="salvarURLConfig()" style="width:100%;padding:10px;background:#D85A30;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit">Salvar URL</button>
+  <div id="config-status" style="font-size:13px;margin-top:6px;text-align:center;min-height:18px"></div>
+</div>
 
 <div class="content">
 
@@ -260,19 +265,19 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 var tipoAtual=null,funcAtual=null,destinoAtual=null;
-var senhaConfig='responsa!@#';
-var teclasBuf='';
-document.addEventListener('keypress',function(e){
-  teclasBuf+=e.key;
-  if(teclasBuf.includes(senhaConfig)){
+var tapCount=0,tapTimer=null;
+function logoTap(){
+  tapCount++;
+  clearTimeout(tapTimer);
+  tapTimer=setTimeout(function(){tapCount=0;},1500);
+  if(tapCount>=5){
+    tapCount=0;
     var panel=document.getElementById('config-panel');
     panel.style.display=panel.style.display==='block'?'none':'block';
-    teclasBuf='';
     var url=localStorage.getItem('br_sheets_url')||'';
     if(url)document.getElementById('sheets-url-input').value=url;
   }
-  if(teclasBuf.length>20)teclasBuf=teclasBuf.slice(-20);
-});
+}
 
 function salvarURLConfig(){
   var url=document.getElementById('sheets-url-input').value.trim();
@@ -552,10 +557,6 @@ function novoRegistro(){
   document.getElementById('prev-ev').innerHTML='';
   document.getElementById('sheets-status').innerHTML='';
   document.getElementById('data').value=new Date().toISOString().split('T')[0];
-}
-
-  sheetsURL=url;
-  localStorage.setItem('br_sheets_url',url);
 }
 
 </script>
