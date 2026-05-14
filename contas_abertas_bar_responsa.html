@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Conta em Aberto — Bar Responsa</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css" />
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;color:#1a1a1a;min-height:100vh;padding-bottom:2rem}
+  .header{background:#D85A30;padding:1rem 1.25rem;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
+  .header h1{color:#fff;font-size:17px;font-weight:600}
+  .header p{color:rgba(255,255,255,.75);font-size:12px;margin-top:1px}
+  .tab-bar{display:flex;background:#fff;border-bottom:1px solid #e5e5e0;position:sticky;top:57px;z-index:9}
+  .tab{flex:1;padding:12px;font-size:14px;text-align:center;cursor:pointer;color:#888;border-bottom:2px solid transparent;font-weight:500}
+  .tab.active{color:#D85A30;border-bottom-color:#D85A30}
+  .content{padding:1rem;max-width:520px;margin:0 auto}
+  .card{background:#fff;border-radius:12px;border:1px solid #e5e5e0;padding:1rem 1.25rem;margin-bottom:1rem}
+  .sec-title{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:1rem}
+  .field{margin-bottom:1rem}
+  .field:last-child{margin-bottom:0}
+  .field label{display:block;font-size:14px;color:#555;margin-bottom:5px;font-weight:500}
+  .field input,.field select,.field textarea{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:15px;color:#1a1a1a;background:#fff;-webkit-appearance:none;outline:none;font-family:inherit}
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:#D85A30;box-shadow:0 0 0 3px rgba(216,90,48,.12)}
+  .field textarea{resize:vertical;min-height:80px;line-height:1.5}
+  .field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+  .radio-opt{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid #e5e5e0;border-radius:10px;cursor:pointer;margin-bottom:10px;transition:all .15s}
+  .radio-opt input[type=radio]{width:18px;height:18px;flex-shrink:0}
+  .radio-opt span{font-size:15px;color:#1a1a1a;display:flex;align-items:center;gap:8px}
+  .radio-opt.sel-a{border-color:#D85A30;background:#fff5f0}
+  .radio-opt.sel-b{border-color:#185FA5;background:#f0f6ff}
+  .radio-opt.sel-ok{border-color:#1D9E75;background:#f0faf6}
+  .radio-opt.sel-no{border-color:#888;background:#f5f5f0}
+  .hidden{display:none}
+  .btn-primary{width:100%;padding:14px;background:#D85A30;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:.5rem}
+  .btn-primary:active{transform:scale(.98);background:#993C1D}
+  .btn-secondary{width:100%;padding:12px;background:#fff;color:#1a1a1a;border:1px solid #ddd;border-radius:10px;font-size:15px;cursor:pointer;margin-top:.75rem;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px}
+  .btn-secondary:active{background:#f5f5f0}
+  .btn-blue{background:#185FA5;margin-top:.5rem}
+  .btn-blue:active{background:#0C447C}
+  .proto-badge{display:inline-flex;align-items:center;gap:6px;background:#FAECE7;color:#712B13;font-size:14px;font-weight:600;padding:6px 16px;border-radius:20px;margin-bottom:1rem}
+  .tag-tipo{font-size:12px;padding:3px 10px;border-radius:20px;font-weight:500;display:inline-block}
+  .tag-cli{background:#FAECE7;color:#712B13}
+  .tag-func{background:#E6F1FB;color:#0C447C}
+  .divider{border:none;border-top:1px solid #f0f0ec;margin:1rem 0}
+  .foto-area{border:2px dashed #ccc;border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;background:#fafafa;transition:border-color .15s}
+  .foto-area:hover{border-color:#D85A30}
+  .foto-area p{font-size:13px;color:#888;margin-top:6px;line-height:1.5}
+  .fotos-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .fotos-grid img{width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid #e5e5e0}
+  .resumo-row{display:flex;padding:7px 0;border-bottom:1px solid #f0f0ec;font-size:14px}
+  .resumo-row:last-child{border-bottom:none}
+  .resumo-label{color:#888;width:44%;flex-shrink:0;font-size:13px}
+  .resumo-val{color:#1a1a1a;font-weight:500;word-break:break-word}
+  .success-icon{text-align:center;padding:1.5rem 0 .5rem}
+  .success-icon i{font-size:52px;color:#D85A30}
+  .success-icon h2{font-size:19px;font-weight:600;margin-top:.5rem}
+  .success-icon p{font-size:14px;color:#888;margin-top:4px}
+  .step-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;font-size:14px;line-height:1.6;color:#1a1a1a}
+  .step-num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;min-width:24px;background:#D85A30;color:#fff;border-radius:50%;font-size:12px;font-weight:700;margin-top:1px}
+  .code-block{background:#1a1a1a;color:#e8e8e0;border-radius:8px;padding:12px;font-family:'Courier New',monospace;font-size:11px;line-height:1.7;word-break:break-all;white-space:pre-wrap;margin:10px 0}
+  .sheets-status{margin-top:.75rem;font-size:13px;text-align:center;min-height:20px}
+  .url-status{margin-top:.75rem;font-size:13px;text-align:center;min-height:20px}
+  .logo-circle{width:36px;height:36px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .destino-grid{display:flex;flex-direction:column;gap:8px}
+  .destino-opt{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid #e5e5e0;border-radius:10px;cursor:pointer;transition:all .15s}
+  .destino-opt input[type=radio]{width:18px;height:18px;accent-color:#D85A30;flex-shrink:0}
+  .destino-opt span{font-size:15px;color:#1a1a1a}
+  .destino-opt.sel{border-color:#D85A30;background:#fff5f0}
+  .valor-destaque{background:#FAECE7;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+  .valor-destaque span{font-size:13px;color:#712B13}
+  .valor-destaque strong{font-size:16px;color:#D85A30}
+  .cpf-hint{font-size:12px;color:#aaa;margin-top:3px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo-circle"><i class="ti ti-file-invoice" style="color:#fff;font-size:20px"></i></div>
+  <div>
+    <h1>Bar Responsa</h1>
+    <p>Registro de conta em aberto</p>
+  </div>
+</div>
+
+<div class="tab-bar">
+  <div class="tab active" id="tab-form" onclick="showTab('form')">Registro</div>
+  <div class="tab" id="tab-config" onclick="showTab('config')">Configurar Sheets</div>
+</div>
+
+<div class="content">
+
+<!-- FORMULÁRIO -->
+<div id="view-form">
+<div id="form-screen">
+
+  <!-- IDENTIFICAÇÃO -->
+  <div class="card">
+    <div class="sec-title">Identificação</div>
+    <div class="field">
+      <label>Data da ocorrência</label>
+      <input type="date" id="data" />
+    </div>
+    <div class="field">
+      <label>Nome do gerente</label>
+      <input type="text" id="gerente" placeholder="Nome completo" />
+    </div>
+    <div class="field">
+      <label>Número / identificação da conta</label>
+      <input type="text" id="num-conta" placeholder="Ex: Conta #4521 / Mesa 12" />
+    </div>
+    <div class="field">
+      <label>Em qual caixa está o erro</label>
+      <input type="text" id="caixa" placeholder="Ex: Caixa 2 / Nome da operadora" />
+    </div>
+  </div>
+
+  <!-- TIPO DE OCORRÊNCIA -->
+  <div class="card">
+    <div class="sec-title">Tipo de ocorrência</div>
+    <label class="radio-opt" id="opt-cli">
+      <input type="radio" name="tipo" value="cliente" onchange="setTipo('cliente')" style="accent-color:#D85A30" />
+      <span><i class="ti ti-user-x" style="color:#D85A30;font-size:20px"></i>Cliente não pagou</span>
+    </label>
+    <label class="radio-opt" id="opt-func">
+      <input type="radio" name="tipo" value="funcionario" onchange="setTipo('funcionario')" style="accent-color:#185FA5" />
+      <span><i class="ti ti-alert-circle" style="color:#185FA5;font-size:20px"></i>Erro operacional do funcionário</span>
+    </label>
+  </div>
+
+  <!-- DADOS DO CLIENTE -->
+  <div class="card">
+    <div class="sec-title">Dados do cliente</div>
+    <div class="field">
+      <label>Nome completo do cliente</label>
+      <input type="text" id="nome-cli" placeholder="Nome completo" />
+    </div>
+    <div class="field">
+      <label>CPF do cliente</label>
+      <input type="text" id="cpf-cli" placeholder="000.000.000-00" maxlength="14" oninput="mascaraCPF(this)" />
+      <p class="cpf-hint">Usado para localizar a conta no sistema</p>
+    </div>
+  </div>
+
+  <!-- FUNCIONÁRIO ENVOLVIDO -->
+  <div class="card">
+    <div class="sec-title">Funcionário envolvido</div>
+    <label class="radio-opt" id="opt-func-sim">
+      <input type="radio" name="func" value="sim" onchange="setFunc('sim')" style="accent-color:#1D9E75" />
+      <span><i class="ti ti-user-check" style="color:#1D9E75;font-size:20px"></i>Sim — há funcionário envolvido</span>
+    </label>
+    <label class="radio-opt" id="opt-func-nao">
+      <input type="radio" name="func" value="nao" onchange="setFunc('nao')" style="accent-color:#888" />
+      <span><i class="ti ti-user-off" style="color:#888;font-size:20px"></i>Não identificado</span>
+    </label>
+    <div id="sec-func-nome" style="display:none;margin-top:1rem">
+      <div class="field">
+        <label>Nome do funcionário</label>
+        <input type="text" id="nome-func" placeholder="Nome completo do funcionário" />
+      </div>
+    </div>
+  </div>
+
+  <!-- VALOR DA CONTA -->
+  <div class="card">
+    <div class="sec-title">Valor da conta</div>
+    <div class="field">
+      <label>Valor total em aberto (R$)</label>
+      <input type="number" id="valor-conta" placeholder="0,00" step="0.01" min="0" oninput="atualizaValor()" />
+    </div>
+    <div class="valor-destaque" id="valor-destaque" style="display:none">
+      <i class="ti ti-cash" style="font-size:22px;color:#D85A30"></i>
+      <div>
+        <span>Valor em aberto</span><br>
+        <strong id="valor-display">R$ 0,00</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOTOS DA CONTA -->
+  <div class="card">
+    <div class="sec-title">Fotos da conta</div>
+    <p style="font-size:13px;color:#888;margin-bottom:1rem;line-height:1.6">Anexe fotos da conta completa mostrando o funcionário que vendeu, horário e data de tudo.</p>
+    <div class="foto-area" onclick="document.getElementById('inp-fotos-conta').click()">
+      <i class="ti ti-receipt" style="font-size:28px;color:#D85A30"></i>
+      <p>Toque para anexar fotos da conta<br><strong style="color:#D85A30">com funcionário, horário e data</strong></p>
+    </div>
+    <input type="file" id="inp-fotos-conta" accept="image/*" multiple style="display:none" onchange="previewFotos(event,'prev-conta','fotosContaB64')" />
+    <div class="fotos-grid" id="prev-conta"></div>
+  </div>
+
+  <!-- FOTOS DE EVIDÊNCIAS -->
+  <div class="card">
+    <div class="sec-title">Evidências complementares</div>
+    <p style="font-size:13px;color:#888;margin-bottom:1rem;line-height:1.6">Fotos adicionais com todas as informações pertinentes à conta.</p>
+    <div class="foto-area" onclick="document.getElementById('inp-fotos-ev').click()">
+      <i class="ti ti-camera" style="font-size:28px;color:#aaa"></i>
+      <p>Toque para anexar evidências complementares</p>
+    </div>
+    <input type="file" id="inp-fotos-ev" accept="image/*" multiple style="display:none" onchange="previewFotos(event,'prev-ev','fotosEvB64')" />
+    <div class="fotos-grid" id="prev-ev"></div>
+  </div>
+
+  <!-- DESTINO DA CONTA -->
+  <div class="card">
+    <div class="sec-title">Destino da conta</div>
+    <div class="destino-grid">
+      <label class="destino-opt" id="dest-desconto">
+        <input type="radio" name="destino" value="desconto" onchange="setDestino('desconto')" />
+        <span><i class="ti ti-tag" style="color:#D85A30;margin-right:6px"></i>Desconto gerado</span>
+      </label>
+      <label class="destino-opt" id="dest-cobrar-cli">
+        <input type="radio" name="destino" value="cobrar-cliente" onchange="setDestino('cobrar-cliente')" />
+        <span><i class="ti ti-user-dollar" style="color:#185FA5;margin-right:6px"></i>A cobrar do cliente</span>
+      </label>
+      <label class="destino-opt" id="dest-cobrar-func">
+        <input type="radio" name="destino" value="cobrar-funcionario" onchange="setDestino('cobrar-funcionario')" />
+        <span><i class="ti ti-wallet" style="color:#854F0B;margin-right:6px"></i>A cobrar do funcionário (fundo de quebra)</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- OBSERVAÇÕES -->
+  <div class="card">
+    <div class="sec-title">Observações</div>
+    <div class="field">
+      <textarea id="obs" placeholder="Detalhes adicionais, contexto, o que mais for relevante para o registro..."></textarea>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="enviar()">
+    <i class="ti ti-send"></i> Registrar conta em aberto
+  </button>
+</div>
+
+<!-- TELA DE SUCESSO -->
+<div id="success-screen" style="display:none">
+  <div class="card">
+    <div class="success-icon">
+      <i class="ti ti-clipboard-check"></i>
+      <h2>Conta registrada</h2>
+      <p>Protocolo gerado com sucesso</p>
+    </div>
+    <div style="text-align:center;margin-bottom:1rem" id="proto-area"></div>
+    <div id="resumo-area"></div>
+  </div>
+  <button class="btn-primary btn-blue" onclick="gerarPDF()">
+    <i class="ti ti-file-type-pdf"></i> Baixar PDF
+  </button>
+  <button class="btn-secondary" onclick="novoRegistro()">
+    <i class="ti ti-plus"></i> Novo registro
+  </button>
+  <div class="sheets-status" id="sheets-status"></div>
+</div>
+</div>
+
+<!-- CONFIGURAÇÃO SHEETS -->
+<div id="view-config" style="display:none">
+  <div class="card">
+    <div class="sec-title">Configurar Google Sheets</div>
+    <p style="font-size:14px;color:#555;margin-bottom:1.25rem;line-height:1.6">Siga os passos abaixo uma única vez. Cada registro vai automaticamente para a aba <strong>Contas Abertas</strong> da sua planilha e o PDF para a pasta <strong>CONTAS ABERTAS</strong> no Drive.</p>
+
+    <div class="step-row"><span class="step-num">1</span><span>Acesse sua planilha <strong>Fechamentos Bar Responsa</strong> no Google Sheets.</span></div>
+    <div class="step-row"><span class="step-num">2</span><span>Crie uma nova aba chamada <strong>Contas Abertas</strong> (clique no + no rodapé da planilha).</span></div>
+    <div class="step-row"><span class="step-num">3</span><span>No menu, clique em <strong>Extensões → Apps Script</strong>. Cole o código abaixo <strong>após</strong> o código que já existe (não apague o anterior).</span></div>
+
+    <div class="code-block" id="code-block">function doPostContas(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName('Contas Abertas');
+  if (!sheet) sheet = ss.insertSheet('Contas Abertas');
+  var data = JSON.parse(e.postData.contents);
+
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow([
+      'Protocolo','Data','Gerente',
+      'Nº Conta','Caixa','Tipo Ocorrência',
+      'Nome Cliente','CPF Cliente',
+      'Funcionário Envolvido','Nome Funcionário',
+      'Valor em Aberto','Destino',
+      'Fotos Conta','Fotos Evidências',
+      'Observações','Link PDF','Timestamp'
+    ]);
+  }
+
+  var driveUrl = '';
+  try {
+    if (data.pdfBase64 && data.pdfNome) {
+      var folders = DriveApp.getFoldersByName('CONTAS ABERTAS');
+      var folder = folders.hasNext()
+        ? folders.next()
+        : DriveApp.createFolder('CONTAS ABERTAS');
+      var blob = Utilities.newBlob(
+        Utilities.base64Decode(data.pdfBase64),
+        'application/pdf', data.pdfNome
+      );
+      driveUrl = folder.createFile(blob).getUrl();
+    }
+  } catch(err) {}
+
+  sheet.appendRow([
+    data.protocolo, data.data, data.gerente,
+    data.numConta||'', data.caixa||'',
+    data.tipo||'', data.nomeCli||'',
+    data.cpfCli||'', data.funcEnvolvido||'',
+    data.nomeFunc||'', data.valorConta||'',
+    data.destino||'', data.fotosContaQtd||0,
+    data.fotosEvQtd||0, data.obs||'',
+    driveUrl, new Date().toLocaleString('pt-BR')
+  ]);
+
+  return ContentService
+    .createTextOutput(
+      JSON.stringify({ok:true, protocolo:data.protocolo, driveUrl:driveUrl})
+    )
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  var data = JSON.parse(e.postData.contents);
+  if (data.origem === 'contas') return doPostContas(e);
+
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow([
+      'Protocolo','Data','Gerente','Status',
+      'Operador','Valor Diferença','Conta Identificada',
+      'Nº Conta','Cliente','Telefone','Local',
+      'Vendedor','O que aconteceu','Produtos',
+      'Valor Conta','Destino','Tipo Erro',
+      'Prazo','Observações','Fotos','Link PDF','Timestamp'
+    ]);
+  }
+  var driveUrl = '';
+  try {
+    if (data.pdfBase64 && data.pdfNome) {
+      var folders = DriveApp.getFoldersByName('Fechamentos Bar Responsa');
+      var folder = folders.hasNext()
+        ? folders.next()
+        : DriveApp.createFolder('Fechamentos Bar Responsa');
+      var blob = Utilities.newBlob(
+        Utilities.base64Decode(data.pdfBase64),
+        'application/pdf', data.pdfNome
+      );
+      driveUrl = folder.createFile(blob).getUrl();
+    }
+  } catch(err) {}
+  sheet.appendRow([
+    data.protocolo, data.data, data.gerente,
+    data.status, data.operador||'', data.valor||'',
+    data.contaIdent||'', data.numConta||'',
+    data.nomeCliente||'', data.telefone||'',
+    data.local||'', data.vendedor||'',
+    data.oQue||'', data.produtos||'',
+    data.valConta||'', data.destino||'',
+    data.tipoErro||'', data.prazo||'',
+    data.obs||'', data.fotos||0,
+    driveUrl, new Date().toLocaleString('pt-BR')
+  ]);
+  return ContentService
+    .createTextOutput(JSON.stringify({ok:true, protocolo:data.protocolo, driveUrl:driveUrl}))
+    .setMimeType(ContentService.MimeType.JSON);
+}</div>
+
+    <button class="btn-primary" style="margin:1rem 0" onclick="copiarCodigo()">
+      <i class="ti ti-copy"></i> Copiar código
+    </button>
+
+    <div class="step-row"><span class="step-num">4</span><span>Clique em <strong>Implantar → Gerenciar implantações → editar (lápis)</strong>. Mude para <strong>Nova versão</strong> e clique em <strong>Implantar</strong>. A URL continua a mesma.</span></div>
+    <div class="step-row"><span class="step-num">5</span><span>Cole a mesma URL do Apps Script que você já usa no HTML 1 — os dois formulários usam o mesmo script.</span></div>
+
+    <div class="field" style="margin-top:1rem">
+      <label>URL do Apps Script</label>
+      <input type="url" id="sheets-url" placeholder="https://script.google.com/macros/s/..." />
+    </div>
+    <button class="btn-primary" onclick="salvarURL()">
+      <i class="ti ti-device-floppy"></i> Salvar e conectar
+    </button>
+    <div class="url-status" id="url-status"></div>
+  </div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+var tipoAtual=null,funcAtual=null,destinoAtual=null;
+var fotosContaB64=[],fotosEvB64=[],ultimoProto='';
+var sheetsURL=localStorage.getItem('br_sheets_url')||'';
+
+document.getElementById('data').value=new Date().toISOString().split('T')[0];
+if(sheetsURL)document.getElementById('sheets-url').value=sheetsURL;
+
+function showTab(t){
+  document.getElementById('view-form').style.display=t==='form'?'block':'none';
+  document.getElementById('view-config').style.display=t==='config'?'block':'none';
+  document.getElementById('tab-form').classList.toggle('active',t==='form');
+  document.getElementById('tab-config').classList.toggle('active',t==='config');
+}
+
+function setTipo(v){
+  tipoAtual=v;
+  document.getElementById('opt-cli').className='radio-opt'+(v==='cliente'?' sel-a':'');
+  document.getElementById('opt-func').className='radio-opt'+(v==='funcionario'?' sel-b':'');
+}
+
+function setFunc(v){
+  funcAtual=v;
+  document.getElementById('opt-func-sim').className='radio-opt'+(v==='sim'?' sel-ok':'');
+  document.getElementById('opt-func-nao').className='radio-opt'+(v==='nao'?' sel-no':'');
+  document.getElementById('sec-func-nome').style.display=v==='sim'?'block':'none';
+}
+
+function setDestino(v){
+  destinoAtual=v;
+  ['dest-desconto','dest-cobrar-cli','dest-cobrar-func'].forEach(function(id){
+    document.getElementById(id).className='destino-opt';
+  });
+  var map={'desconto':'dest-desconto','cobrar-cliente':'dest-cobrar-cli','cobrar-funcionario':'dest-cobrar-func'};
+  if(map[v])document.getElementById(map[v]).className='destino-opt sel';
+}
+
+function mascaraCPF(el){
+  var v=el.value.replace(/\D/g,'');
+  if(v.length<=11){
+    v=v.replace(/(\d{3})(\d)/,'$1.$2');
+    v=v.replace(/(\d{3})(\d)/,'$1.$2');
+    v=v.replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+  }
+  el.value=v;
+}
+
+function atualizaValor(){
+  var v=parseFloat(document.getElementById('valor-conta').value)||0;
+  var dest=document.getElementById('valor-destaque');
+  if(v>0){
+    dest.style.display='flex';
+    document.getElementById('valor-display').textContent='R$ '+v.toFixed(2).replace('.',',');
+  } else {
+    dest.style.display='none';
+  }
+}
+
+function previewFotos(e,prevId,arrName){
+  var arr=arrName==='fotosContaB64'?fotosContaB64:fotosEvB64;
+  Array.from(e.target.files).forEach(function(f){
+    var r=new FileReader();
+    r.onload=function(ev){
+      arr.push(ev.target.result);
+      var img=document.createElement('img');
+      img.src=ev.target.result;
+      document.getElementById(prevId).appendChild(img);
+    };
+    r.readAsDataURL(f);
+  });
+}
+
+function g(id){return document.getElementById(id).value.trim();}
+
+function gerarProtocolo(){
+  var d=new Date();
+  var dd=String(d.getDate()).padStart(2,'0');
+  var mm=String(d.getMonth()+1).padStart(2,'0');
+  var yy=String(d.getFullYear()).slice(-2);
+  return 'CAB-'+yy+mm+dd+'-'+String(Math.floor(Math.random()*900)+100);
+}
+
+function getDestinoLabel(){
+  var map={'desconto':'Desconto gerado','cobrar-cliente':'A cobrar do cliente','cobrar-funcionario':'A cobrar do funcionário (fundo de quebra)'};
+  return destinoAtual?map[destinoAtual]||'—':'—';
+}
+
+function getTipoLabel(){
+  return tipoAtual==='cliente'?'Cliente não pagou':tipoAtual==='funcionario'?'Erro operacional do funcionário':'—';
+}
+
+function enviar(){
+  if(!g('gerente')){alert('Informe o nome do gerente.');return;}
+  if(!g('data')){alert('Informe a data.');return;}
+  if(!g('num-conta')){alert('Informe o número da conta.');return;}
+  if(!g('caixa')){alert('Informe em qual caixa está o erro.');return;}
+  if(!tipoAtual){alert('Selecione o tipo de ocorrência.');return;}
+  if(!g('nome-cli')){alert('Informe o nome do cliente.');return;}
+  if(!g('cpf-cli')){alert('Informe o CPF do cliente.');return;}
+  if(!funcAtual){alert('Informe se há funcionário envolvido.');return;}
+  if(funcAtual==='sim'&&!g('nome-func')){alert('Informe o nome do funcionário.');return;}
+  if(!g('valor-conta')){alert('Informe o valor da conta.');return;}
+  if(fotosContaB64.length===0){alert('Anexe pelo menos uma foto da conta.');return;}
+  if(!destinoAtual){alert('Selecione o destino da conta.');return;}
+
+  ultimoProto=gerarProtocolo();
+  document.getElementById('proto-area').innerHTML='<span class="proto-badge"><i class="ti ti-hash"></i> '+ultimoProto+'</span>';
+  document.getElementById('resumo-area').innerHTML=montaResumo();
+  document.getElementById('form-screen').style.display='none';
+  document.getElementById('success-screen').style.display='block';
+  if(sheetsURL)enviarSheets();
+}
+
+function montaResumo(){
+  var rows=[
+    ['Data',g('data')],
+    ['Gerente',g('gerente')],
+    ['Nº conta',g('num-conta')],
+    ['Caixa',g('caixa')],
+    ['Tipo',getTipoLabel()],
+    ['Cliente',g('nome-cli')],
+    ['CPF',g('cpf-cli')],
+    ['Funcionário',funcAtual==='sim'?g('nome-func'):'Não identificado'],
+    ['Valor em aberto','R$ '+(parseFloat(g('valor-conta'))||0).toFixed(2).replace('.',',')],
+    ['Destino',getDestinoLabel()],
+    ['Fotos conta',fotosContaB64.length+' foto(s)'],
+    ['Fotos evidências',fotosEvB64.length+' foto(s)']
+  ];
+  if(g('obs'))rows.push(['Observações',g('obs')]);
+  return rows.map(function(r){
+    return '<div class="resumo-row"><span class="resumo-label">'+r[0]+'</span><span class="resumo-val">'+r[1]+'</span></div>';
+  }).join('');
+}
+
+function gerarPDFbase64(){
+  var doc=new jspdf.jsPDF({unit:'mm',format:'a4'});
+  var y=18;
+  doc.setFillColor(216,90,48);doc.rect(0,0,210,28,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(15);doc.setFont(undefined,'bold');
+  doc.text('Bar Responsa — Conta em Aberto',14,13);
+  doc.setFontSize(10);doc.setFont(undefined,'normal');
+  doc.text('Registro de conta inadimplente / erro operacional',14,21);
+  y=36;doc.setTextColor(0,0,0);
+  doc.setFontSize(11);doc.setFont(undefined,'bold');doc.setTextColor(153,60,29);
+  doc.text('Protocolo: '+ultimoProto,14,y);y+=9;doc.setTextColor(0,0,0);
+  doc.setFontSize(10);
+  function linha(l,v){
+    if(y>270){doc.addPage();y=20;}
+    doc.setFont(undefined,'bold');doc.text(l+': ',14,y);
+    doc.setFont(undefined,'normal');
+    var xv=14+doc.getTextWidth(l+': ');
+    var lines=doc.splitTextToSize(String(v||'—'),180-xv+14);
+    doc.text(lines,xv,y);y+=6*lines.length;
+  }
+  linha('Data',g('data'));
+  linha('Gerente',g('gerente'));
+  linha('Nº conta',g('num-conta'));
+  linha('Caixa',g('caixa'));
+  linha('Tipo',getTipoLabel());
+  linha('Cliente',g('nome-cli'));
+  linha('CPF',g('cpf-cli'));
+  linha('Funcionário',funcAtual==='sim'?g('nome-func'):'Não identificado');
+  linha('Valor em aberto','R$ '+(parseFloat(g('valor-conta'))||0).toFixed(2).replace('.',','));
+  linha('Destino',getDestinoLabel());
+  if(g('obs'))linha('Observações',g('obs'));
+  var todasFotos=fotosContaB64.concat(fotosEvB64);
+  if(todasFotos.length>0){
+    y+=4;if(y>240){doc.addPage();y=20;}
+    doc.setFont(undefined,'bold');doc.text('Evidências ('+todasFotos.length+' foto(s)):',14,y);y+=6;
+    todasFotos.slice(0,6).forEach(function(f){
+      if(y>230){doc.addPage();y=20;}
+      try{doc.addImage(f,'JPEG',14,y,58,44);y+=49;}catch(err){}
+    });
+  }
+  doc.setFontSize(8);doc.setTextColor(150);
+  doc.text('Gerado em '+new Date().toLocaleString('pt-BR')+' — Bar Responsa',14,287);
+  return doc.output('datauristring').split(',')[1];
+}
+
+function gerarPDF(){
+  var doc=new jspdf.jsPDF({unit:'mm',format:'a4'});
+  var y=18;
+  doc.setFillColor(216,90,48);doc.rect(0,0,210,28,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(15);doc.setFont(undefined,'bold');
+  doc.text('Bar Responsa — Conta em Aberto',14,13);
+  doc.setFontSize(10);doc.setFont(undefined,'normal');
+  doc.text('Registro de conta inadimplente / erro operacional',14,21);
+  y=36;doc.setTextColor(0,0,0);
+  doc.setFontSize(11);doc.setFont(undefined,'bold');doc.setTextColor(153,60,29);
+  doc.text('Protocolo: '+ultimoProto,14,y);y+=9;doc.setTextColor(0,0,0);
+  doc.setFontSize(10);
+  function linha(l,v){
+    if(y>270){doc.addPage();y=20;}
+    doc.setFont(undefined,'bold');doc.text(l+': ',14,y);
+    doc.setFont(undefined,'normal');
+    var xv=14+doc.getTextWidth(l+': ');
+    var lines=doc.splitTextToSize(String(v||'—'),180-xv+14);
+    doc.text(lines,xv,y);y+=6*lines.length;
+  }
+  linha('Data',g('data'));
+  linha('Gerente',g('gerente'));
+  linha('Nº conta',g('num-conta'));
+  linha('Caixa',g('caixa'));
+  linha('Tipo',getTipoLabel());
+  linha('Cliente',g('nome-cli'));
+  linha('CPF',g('cpf-cli'));
+  linha('Funcionário',funcAtual==='sim'?g('nome-func'):'Não identificado');
+  linha('Valor em aberto','R$ '+(parseFloat(g('valor-conta'))||0).toFixed(2).replace('.',','));
+  linha('Destino',getDestinoLabel());
+  if(g('obs'))linha('Observações',g('obs'));
+  var todasFotos=fotosContaB64.concat(fotosEvB64);
+  if(todasFotos.length>0){
+    y+=4;if(y>240){doc.addPage();y=20;}
+    doc.setFont(undefined,'bold');doc.text('Evidências ('+todasFotos.length+' foto(s)):',14,y);y+=6;
+    todasFotos.slice(0,6).forEach(function(f){
+      if(y>230){doc.addPage();y=20;}
+      try{doc.addImage(f,'JPEG',14,y,58,44);y+=49;}catch(err){}
+    });
+  }
+  doc.setFontSize(8);doc.setTextColor(150);
+  doc.text('Gerado em '+new Date().toLocaleString('pt-BR')+' — Bar Responsa',14,287);
+  doc.save('conta_aberta_'+ultimoProto+'_'+g('nome-cli').replace(/\s+/g,'_')+'.pdf');
+}
+
+function enviarSheets(){
+  var st=document.getElementById('sheets-status');
+  st.innerHTML='<i class="ti ti-loader"></i> Enviando para Google Sheets e Drive...';
+  var nomeArquivo='conta_aberta_'+ultimoProto+'_'+g('nome-cli').replace(/\s+/g,'_')+'.pdf';
+  var pdfB64=gerarPDFbase64();
+  var payload={
+    origem:'contas',
+    protocolo:ultimoProto,
+    data:g('data'),gerente:g('gerente'),
+    numConta:g('num-conta'),caixa:g('caixa'),
+    tipo:getTipoLabel(),
+    nomeCli:g('nome-cli'),cpfCli:g('cpf-cli'),
+    funcEnvolvido:funcAtual==='sim'?'Sim':'Não identificado',
+    nomeFunc:funcAtual==='sim'?g('nome-func'):'',
+    valorConta:g('valor-conta'),
+    destino:getDestinoLabel(),
+    fotosContaQtd:fotosContaB64.length,
+    fotosEvQtd:fotosEvB64.length,
+    obs:g('obs'),
+    pdfBase64:pdfB64,
+    pdfNome:nomeArquivo
+  };
+  fetch(sheetsURL,{method:'POST',body:JSON.stringify(payload)})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.ok){
+        var msg='<span style="color:#1D9E75"><i class="ti ti-circle-check"></i> Salvo no Google Sheets — aba Contas Abertas</span>';
+        if(d.driveUrl)msg+='<br><a href="'+d.driveUrl+'" target="_blank" style="color:#185FA5;font-size:13px"><i class="ti ti-brand-google-drive"></i> Ver PDF no Drive</a>';
+        st.innerHTML=msg;
+      } else {
+        st.innerHTML='<span style="color:#E24B4A"><i class="ti ti-x"></i> Erro ao salvar. Verifique a URL.</span>';
+      }
+    })
+    .catch(function(){
+      st.innerHTML='<span style="color:#E24B4A"><i class="ti ti-x"></i> Não conectou ao Sheets. Verifique a URL.</span>';
+    });
+}
+
+function novoRegistro(){
+  document.getElementById('form-screen').style.display='block';
+  document.getElementById('success-screen').style.display='none';
+  document.querySelectorAll('input[type=text],input[type=number],input[type=tel],textarea').forEach(function(el){if(el.id!=='data')el.value='';});
+  document.querySelectorAll('input[type=radio]').forEach(function(el){el.checked=false;});
+  document.querySelectorAll('.radio-opt').forEach(function(el){el.className='radio-opt';});
+  document.querySelectorAll('.destino-opt').forEach(function(el){el.className='destino-opt';});
+  tipoAtual=null;funcAtual=null;destinoAtual=null;
+  fotosContaB64=[];fotosEvB64=[];ultimoProto='';
+  document.getElementById('sec-func-nome').style.display='none';
+  document.getElementById('valor-destaque').style.display='none';
+  document.getElementById('prev-conta').innerHTML='';
+  document.getElementById('prev-ev').innerHTML='';
+  document.getElementById('sheets-status').innerHTML='';
+  document.getElementById('data').value=new Date().toISOString().split('T')[0];
+}
+
+function salvarURL(){
+  var url=document.getElementById('sheets-url').value.trim();
+  if(!url){alert('Cole a URL do Apps Script primeiro.');return;}
+  sheetsURL=url;
+  localStorage.setItem('br_sheets_url',url);
+  document.getElementById('url-status').innerHTML='<span style="color:#1D9E75"><i class="ti ti-circle-check"></i> URL salva! Formulário conectado ao Sheets.</span>';
+}
+
+function copiarCodigo(){
+  var code=document.getElementById('code-block').innerText;
+  navigator.clipboard.writeText(code).then(function(){
+    alert('Código copiado! Cole no Apps Script substituindo o código anterior.');
+  }).catch(function(){
+    alert('Selecione e copie o código manualmente.');
+  });
+}
+</script>
+</body>
+</html>
