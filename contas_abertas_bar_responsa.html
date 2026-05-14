@@ -11,9 +11,7 @@
   .header{background:#D85A30;padding:1rem 1.25rem;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
   .header h1{color:#fff;font-size:17px;font-weight:600}
   .header p{color:rgba(255,255,255,.75);font-size:12px;margin-top:1px}
-  .tab-bar{display:flex;background:#fff;border-bottom:1px solid #e5e5e0;position:sticky;top:57px;z-index:9}
-  .tab{flex:1;padding:12px;font-size:14px;text-align:center;cursor:pointer;color:#888;border-bottom:2px solid transparent;font-weight:500}
-  .tab.active{color:#D85A30;border-bottom-color:#D85A30}
+
   .content{padding:1rem;max-width:520px;margin:0 auto}
   .card{background:#fff;border-radius:12px;border:1px solid #e5e5e0;padding:1rem 1.25rem;margin-bottom:1rem}
   .sec-title{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:1rem}
@@ -83,10 +81,7 @@
   </div>
 </div>
 
-<div class="tab-bar">
-  <div class="tab active" id="tab-form" onclick="showTab('form')">Registro</div>
-  <div class="tab" id="tab-config" onclick="showTab('config')">Configurar Sheets</div>
-</div>
+
 
 <div class="content">
 
@@ -254,8 +249,7 @@
 </div>
 </div>
 
-<!-- CONFIGURAÇÃO SHEETS -->
-<div id="view-config" style="display:none">
+
   <div class="card">
     <div class="sec-title">Configurar Google Sheets</div>
     <p style="font-size:14px;color:#555;margin-bottom:1.25rem;line-height:1.6">Siga os passos abaixo uma única vez. Cada registro vai automaticamente para a aba <strong>Contas Abertas</strong> da sua planilha e o PDF para a pasta <strong>CONTAS ABERTAS</strong> no Drive.</p>
@@ -385,17 +379,10 @@ function doPost(e) {
 <script>
 var tipoAtual=null,funcAtual=null,destinoAtual=null;
 var fotosContaB64=[],fotosEvB64=[],ultimoProto='';
-var sheetsURL=localStorage.getItem('br_sheets_url')||'';
+var sheetsURL='https://script.google.com/macros/s/AKfycbywiAksVo6MPLGfDGfx334w7r5Mpd_NqxKWvGL0zghcD04jpGkkgp2eMQOEwds9llCc/exec';
 
 document.getElementById('data').value=new Date().toISOString().split('T')[0];
-if(sheetsURL)document.getElementById('sheets-url').value=sheetsURL;
 
-function showTab(t){
-  document.getElementById('view-form').style.display=t==='form'?'block':'none';
-  document.getElementById('view-config').style.display=t==='config'?'block':'none';
-  document.getElementById('tab-form').classList.toggle('active',t==='form');
-  document.getElementById('tab-config').classList.toggle('active',t==='config');
-}
 
 function setTipo(v){
   tipoAtual=v;
@@ -663,22 +650,11 @@ function novoRegistro(){
   document.getElementById('data').value=new Date().toISOString().split('T')[0];
 }
 
-function salvarURL(){
-  var url=document.getElementById('sheets-url').value.trim();
-  if(!url){alert('Cole a URL do Apps Script primeiro.');return;}
   sheetsURL=url;
   localStorage.setItem('br_sheets_url',url);
   document.getElementById('url-status').innerHTML='<span style="color:#1D9E75"><i class="ti ti-circle-check"></i> URL salva! Formulário conectado ao Sheets.</span>';
 }
 
-function copiarCodigo(){
-  var code=document.getElementById('code-block').innerText;
-  navigator.clipboard.writeText(code).then(function(){
-    alert('Código copiado! Cole no Apps Script substituindo o código anterior.');
-  }).catch(function(){
-    alert('Selecione e copie o código manualmente.');
-  });
-}
 </script>
 </body>
 </html>
