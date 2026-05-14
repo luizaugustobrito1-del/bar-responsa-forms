@@ -250,129 +250,6 @@
 </div>
 
 
-  <div class="card">
-    <div class="sec-title">Configurar Google Sheets</div>
-    <p style="font-size:14px;color:#555;margin-bottom:1.25rem;line-height:1.6">Siga os passos abaixo uma única vez. Cada registro vai automaticamente para a aba <strong>Contas Abertas</strong> da sua planilha e o PDF para a pasta <strong>CONTAS ABERTAS</strong> no Drive.</p>
-
-    <div class="step-row"><span class="step-num">1</span><span>Acesse sua planilha <strong>Fechamentos Bar Responsa</strong> no Google Sheets.</span></div>
-    <div class="step-row"><span class="step-num">2</span><span>Crie uma nova aba chamada <strong>Contas Abertas</strong> (clique no + no rodapé da planilha).</span></div>
-    <div class="step-row"><span class="step-num">3</span><span>No menu, clique em <strong>Extensões → Apps Script</strong>. Cole o código abaixo <strong>após</strong> o código que já existe (não apague o anterior).</span></div>
-
-    <div class="code-block" id="code-block">function doPostContas(e) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName('Contas Abertas');
-  if (!sheet) sheet = ss.insertSheet('Contas Abertas');
-  var data = JSON.parse(e.postData.contents);
-
-  if (sheet.getLastRow() === 0) {
-    sheet.appendRow([
-      'Protocolo','Data','Gerente',
-      'Nº Conta','Caixa','Tipo Ocorrência',
-      'Nome Cliente','CPF Cliente',
-      'Funcionário Envolvido','Nome Funcionário',
-      'Valor em Aberto','Destino',
-      'Fotos Conta','Fotos Evidências',
-      'Observações','Link PDF','Timestamp'
-    ]);
-  }
-
-  var driveUrl = '';
-  try {
-    if (data.pdfBase64 && data.pdfNome) {
-      var folders = DriveApp.getFoldersByName('CONTAS ABERTAS');
-      var folder = folders.hasNext()
-        ? folders.next()
-        : DriveApp.createFolder('CONTAS ABERTAS');
-      var blob = Utilities.newBlob(
-        Utilities.base64Decode(data.pdfBase64),
-        'application/pdf', data.pdfNome
-      );
-      driveUrl = folder.createFile(blob).getUrl();
-    }
-  } catch(err) {}
-
-  sheet.appendRow([
-    data.protocolo, data.data, data.gerente,
-    data.numConta||'', data.caixa||'',
-    data.tipo||'', data.nomeCli||'',
-    data.cpfCli||'', data.funcEnvolvido||'',
-    data.nomeFunc||'', data.valorConta||'',
-    data.destino||'', data.fotosContaQtd||0,
-    data.fotosEvQtd||0, data.obs||'',
-    driveUrl, new Date().toLocaleString('pt-BR')
-  ]);
-
-  return ContentService
-    .createTextOutput(
-      JSON.stringify({ok:true, protocolo:data.protocolo, driveUrl:driveUrl})
-    )
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-function doPost(e) {
-  var data = JSON.parse(e.postData.contents);
-  if (data.origem === 'contas') return doPostContas(e);
-
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  if (sheet.getLastRow() === 0) {
-    sheet.appendRow([
-      'Protocolo','Data','Gerente','Status',
-      'Operador','Valor Diferença','Conta Identificada',
-      'Nº Conta','Cliente','Telefone','Local',
-      'Vendedor','O que aconteceu','Produtos',
-      'Valor Conta','Destino','Tipo Erro',
-      'Prazo','Observações','Fotos','Link PDF','Timestamp'
-    ]);
-  }
-  var driveUrl = '';
-  try {
-    if (data.pdfBase64 && data.pdfNome) {
-      var folders = DriveApp.getFoldersByName('Fechamentos Bar Responsa');
-      var folder = folders.hasNext()
-        ? folders.next()
-        : DriveApp.createFolder('Fechamentos Bar Responsa');
-      var blob = Utilities.newBlob(
-        Utilities.base64Decode(data.pdfBase64),
-        'application/pdf', data.pdfNome
-      );
-      driveUrl = folder.createFile(blob).getUrl();
-    }
-  } catch(err) {}
-  sheet.appendRow([
-    data.protocolo, data.data, data.gerente,
-    data.status, data.operador||'', data.valor||'',
-    data.contaIdent||'', data.numConta||'',
-    data.nomeCliente||'', data.telefone||'',
-    data.local||'', data.vendedor||'',
-    data.oQue||'', data.produtos||'',
-    data.valConta||'', data.destino||'',
-    data.tipoErro||'', data.prazo||'',
-    data.obs||'', data.fotos||0,
-    driveUrl, new Date().toLocaleString('pt-BR')
-  ]);
-  return ContentService
-    .createTextOutput(JSON.stringify({ok:true, protocolo:data.protocolo, driveUrl:driveUrl}))
-    .setMimeType(ContentService.MimeType.JSON);
-}</div>
-
-    <button class="btn-primary" style="margin:1rem 0" onclick="copiarCodigo()">
-      <i class="ti ti-copy"></i> Copiar código
-    </button>
-
-    <div class="step-row"><span class="step-num">4</span><span>Clique em <strong>Implantar → Gerenciar implantações → editar (lápis)</strong>. Mude para <strong>Nova versão</strong> e clique em <strong>Implantar</strong>. A URL continua a mesma.</span></div>
-    <div class="step-row"><span class="step-num">5</span><span>Cole a mesma URL do Apps Script que você já usa no HTML 1 — os dois formulários usam o mesmo script.</span></div>
-
-    <div class="field" style="margin-top:1rem">
-      <label>URL do Apps Script</label>
-      <input type="url" id="sheets-url" placeholder="https://script.google.com/macros/s/..." />
-    </div>
-    <button class="btn-primary" onclick="salvarURL()">
-      <i class="ti ti-device-floppy"></i> Salvar e conectar
-    </button>
-    <div class="url-status" id="url-status"></div>
-  </div>
-</div>
-
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -652,7 +529,6 @@ function novoRegistro(){
 
   sheetsURL=url;
   localStorage.setItem('br_sheets_url',url);
-  document.getElementById('url-status').innerHTML='<span style="color:#1D9E75"><i class="ti ti-circle-check"></i> URL salva! Formulário conectado ao Sheets.</span>';
 }
 
 </script>
